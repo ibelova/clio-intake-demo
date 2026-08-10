@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Google</title>
+<style>
+  :root {
+    --g-blue: #1a73e8;
+    --g-text: #202124;
+    --g-grey: #5f6368;
+    --g-line: #ebebeb;
+    --g-green: #188038;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: Roboto, arial, sans-serif;
+    color: var(--g-text);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { text-decoration: none; color: inherit; }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ---------- HOME ---------- */
+  #home { padding: 22px 20px; }
+  #home .avatar-row { display: flex; justify-content: flex-end; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#4285f4,#ea4335,#fbbc05,#34a853); background-size: cover; background-position: center; }
+  #home .logo { text-align: center; margin: 60px 0 26px; }
+  #home .logo svg { width: 148px; height: auto; }
+  .searchbox {
+    display: flex; align-items: center; gap: 12px;
+    border: 1px solid #dfe1e5; border-radius: 26px;
+    padding: 11px 16px; margin: 0 auto; max-width: 560px;
+    box-shadow: 0 1px 6px rgba(32,33,36,.10);
+  }
+  .searchbox .mag { color: var(--g-grey); flex: 0 0 auto; }
+  .searchbox input {
+    border: none; outline: none; flex: 1 1 auto;
+    font-size: 17px; color: var(--g-text); background: transparent;
+  }
+  .searchbox .voice { color: #4285f4; flex: 0 0 auto; }
+  .home-btns { display: flex; justify-content: center; gap: 12px; margin-top: 30px; }
+  .home-btns button {
+    font-family: inherit; font-size: 14px; color: #3c4043;
+    background: #f8f9fa; border: 1px solid #f8f9fa; border-radius: 4px;
+    padding: 9px 16px; cursor: pointer;
+  }
+
+  /* ---------- RESULTS ---------- */
+  .results-header { padding: 14px 16px 0; }
+  .results-header .top { display: flex; align-items: center; gap: 14px; }
+  .results-header .logo-sm svg { width: 84px; height: auto; }
+  .results-header .avatar { margin-left: auto; }
+  .results-search {
+    display: flex; align-items: center; gap: 12px;
+    border: 1px solid #dfe1e5; border-radius: 26px;
+    padding: 10px 16px; margin: 14px 0 0;
+    box-shadow: 0 1px 4px rgba(32,33,36,.08);
+  }
+  .results-search .mag { color: var(--g-grey); }
+  .results-search input { border: none; outline: none; flex: 1; font-size: 16px; background: transparent; }
+  .results-search .x { color: var(--g-grey); font-size: 18px; }
+  .results-search .divider { width: 1px; height: 22px; background: #dadce0; }
+  .results-search .voice { color: #4285f4; }
+  .tabs {
+    display: flex; gap: 26px; padding: 12px 16px 0;
+    overflow-x: auto; white-space: nowrap; border-bottom: 1px solid var(--g-line);
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs .tab { font-size: 14px; color: var(--g-grey); padding-bottom: 12px; position: relative; }
+  .tabs .tab.active { color: var(--g-blue); font-weight: 500; }
+  .tabs .tab.active::after { content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background: var(--g-blue); border-radius: 3px 3px 0 0; }
+  .tabs .tab .ai { display: inline-flex; align-items: center; gap: 5px; }
+
+  .sponsored { padding: 16px; border-bottom: 8px solid #f1f3f4; }
+  .sponsored .label { font-size: 15px; font-weight: 500; margin-bottom: 12px; }
+  .sponsored hr { border: none; border-top: 1px solid var(--g-line); margin: 0 0 12px; }
+  .sponsored .src { display: flex; align-items: center; gap: 10px; }
+  .sponsored .favicon { width: 34px; height: 34px; border-radius: 50%; background: #e8f0fe; display:flex; align-items:center; justify-content:center; color: var(--g-blue); }
+  .sponsored .src .txt { font-size: 13px; color: var(--g-grey); line-height: 1.3; }
+  .sponsored .src .txt b { color: var(--g-text); font-weight: 500; display:block; font-size: 14px; }
+  .sponsored h3 { color: #1558d6; font-size: 21px; font-weight: 400; margin: 12px 0 8px; }
+  .sponsored p { font-size: 14px; color: #4d5156; line-height: 1.5; margin: 0 0 14px; }
+
+  /* Local business result (the hero) */
+  .local {
+    margin: 16px; border: 1px solid #dadce0; border-radius: 12px; overflow: hidden;
+    cursor: pointer; box-shadow: 0 1px 3px rgba(32,33,36,.06);
+  }
+  .local .name { font-size: 20px; font-weight: 400; padding: 16px 16px 4px; color: #202124; }
+  .local .meta { padding: 0 16px 4px; font-size: 14px; color: var(--g-grey); display:flex; align-items:center; gap:6px; flex-wrap: wrap;}
+  .local .stars { color: #fbbc04; }
+  .local .rating-num { color: #202124; font-weight: 500; }
+  .local .sub { padding: 2px 16px 12px; font-size: 14px; color: var(--g-grey); }
+  .local .open { color: var(--g-green); font-weight: 500; }
+  .local .photos { display: flex; gap: 2px; height: 130px; }
+  .local .photos > div { flex: 1; background-size: cover; background-position: center; }
+  .local .actions { display: flex; border-top: 1px solid var(--g-line); }
+  .local .actions a, .local .actions .act {
+    flex: 1; text-align: center; padding: 12px 4px; font-size: 13px; color: var(--g-blue);
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    border-right: 1px solid var(--g-line);
+  }
+  .local .actions a:last-child, .local .actions .act:last-child { border-right: none; }
+
+  /* ---------- BUSINESS PROFILE ---------- */
+  #profile { padding-bottom: 40px; }
+  .gp-topbar { display: flex; align-items: center; padding: 12px 16px 0; }
+  .gp-back { color: var(--g-grey); font-size: 22px; }
+  .gp-title-row { display: flex; align-items: flex-start; padding: 8px 16px 0; }
+  .gp-title { font-size: 26px; font-weight: 400; flex: 1; line-height: 1.2; }
+  .gp-title-row .icons { display: flex; gap: 6px; align-items: center; }
+  .gp-title-row .round { width: 40px; height: 40px; border-radius: 50%; display:flex; align-items:center; justify-content:center; color: var(--g-grey); }
+  .gp-title-row .round.outline { border: 1px solid #dadce0; color: var(--g-blue); }
+  .gp-meta { padding: 8px 16px 0; font-size: 15px; color: var(--g-grey); }
+  .gp-meta .stars { color: #fbbc04; }
+  .gp-meta .rating-num { color: #202124; font-weight: 500; }
+  .gp-meta .open { color: var(--g-green); font-weight: 500; }
+  .gp-tabs { display: flex; gap: 10px; padding: 16px; overflow-x: auto; scrollbar-width: none; }
+  .gp-tabs::-webkit-scrollbar { display: none; }
+  .gp-tabs .chip { flex: 0 0 auto; font-size: 15px; padding: 8px 18px; border-radius: 20px; background: #f1f3f4; color: #3c4043; }
+  .gp-tabs .chip.active { background: #d2e3fc; color: #174ea6; font-weight: 500; }
+  .gp-photos { display: flex; gap: 4px; padding: 0 16px; height: 220px; }
+  .gp-photos > div { flex: 1; border-radius: 8px; background-size: cover; background-position: center top; background-color:#e8eaed; }
+  .gp-photos img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
+
+  .gp-actions { display: flex; padding: 20px 8px 8px; overflow-x: auto; scrollbar-width: none; }
+  .gp-actions::-webkit-scrollbar { display: none; }
+  .gp-actions a, .gp-actions .act {
+    flex: 1 0 72px; text-align: center; font-size: 13px; color: var(--g-blue);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .gp-actions .circle { width: 46px; height: 46px; border-radius: 50%; border: 1px solid #d2e3fc; display:flex; align-items:center; justify-content:center; }
+
+  .gp-row { display: flex; align-items: center; gap: 18px; padding: 16px; border-top: 1px solid var(--g-line); font-size: 15px; color: #3c4043; }
+  .gp-row:first-of-type { border-top: 1px solid var(--g-line); }
+  .gp-row .ico { width: 40px; height: 40px; border-radius: 8px; background: #e8f0fe; color: var(--g-blue); display:flex; align-items:center; justify-content:center; flex: 0 0 auto; }
+  .gp-row .grow { flex: 1; }
+  .gp-row .chev { color: var(--g-grey); }
+  .gp-row.address { align-items: stretch; }
+  .gp-row.address .map { width: 120px; border-radius: 8px; background: #dfe7d5; background-size: cover; background-position:center; flex: 0 0 auto; display:flex;align-items:center;justify-content:center;}
+  .gp-row .open { color: var(--g-green); }
+  .gp-row.phone .num { color: #202124; }
+  svg.i { width: 22px; height: 22px; }
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<section id="home" class="screen active">
+  <div class="avatar-row"><div class="avatar" id="avatar-home"></div></div>
+  <div class="logo">
+    <svg viewBox="0 0 272 92" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/><path fill="#EA4335" d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/><path fill="#FBBC05" d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z"/><path fill="#4285F4" d="M225 3v65h-9.5V3h9.5z"/><path fill="#34A853" d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.46zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z"/><path fill="#EA4335" d="M35.29 41.41V32H67c.31 1.64.47 3.58.47 5.68 0 7.06-1.93 15.79-8.15 22.01-6.05 6.3-13.78 9.66-24.02 9.66C16.32 69.35.36 53.89.36 34.91.36 15.93 16.32.47 35.3.47c10.5 0 17.98 4.12 23.6 9.49l-6.64 6.64c-4.03-3.78-9.49-6.72-16.97-6.72-13.86 0-24.7 11.17-24.7 25.03 0 13.86 10.84 25.03 24.7 25.03 8.99 0 14.11-3.61 17.39-6.89 2.66-2.66 4.41-6.46 5.1-11.65l-22.49.01z"/></svg>
+  </div>
+  <div class="searchbox">
+    <span class="mag">
+      <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </span>
+    <input id="home-input" type="text" value="santa clara divorce attorney" />
+    <span class="voice">
+      <svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>
+    </span>
+  </div>
+  <div class="home-btns">
+    <button onclick="go('results')">Google Search</button>
+    <button onclick="go('results')">I'm Feeling Lucky</button>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section id="results" class="screen">
+  <div class="results-header">
+    <div class="top">
+      <span class="logo-sm">
+        <svg viewBox="0 0 272 92" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/><path fill="#EA4335" d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/><path fill="#FBBC05" d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z"/><path fill="#4285F4" d="M225 3v65h-9.5V3h9.5z"/><path fill="#34A853" d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.46zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z"/><path fill="#EA4335" d="M35.29 41.41V32H67c.31 1.64.47 3.58.47 5.68 0 7.06-1.93 15.79-8.15 22.01-6.05 6.3-13.78 9.66-24.02 9.66C16.32 69.35.36 53.89.36 34.91.36 15.93 16.32.47 35.3.47c10.5 0 17.98 4.12 23.6 9.49l-6.64 6.64c-4.03-3.78-9.49-6.72-16.97-6.72-13.86 0-24.7 11.17-24.7 25.03 0 13.86 10.84 25.03 24.7 25.03 8.99 0 14.11-3.61 17.39-6.89 2.66-2.66 4.41-6.46 5.1-11.65l-22.49.01z"/></svg>
+      </span>
+      <span class="avatar"></span>
+    </div>
+    <div class="results-search">
+      <span class="mag"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+      <input type="text" value="santa clara divorce attorney" />
+      <span class="x">✕</span>
+      <span class="divider"></span>
+      <span class="voice"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg></span>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab"><span class="ai">✦ AI Mode</span></div>
+    <div class="tab active">All</div>
+    <div class="tab">Maps</div>
+    <div class="tab">Short videos</div>
+    <div class="tab">Images</div>
+    <div class="tab">News</div>
+  </div>
+
+  <!-- Hero local result: Clio Law Offices LLP -->
+  <div class="local" onclick="go('profile')">
+    <div class="photos">
+      <div id="res-photo-1"></div>
+      <div id="res-photo-2"></div>
+    </div>
+    <div class="name">Clio Law Offices LLP</div>
+    <div class="meta">
+      <span class="rating-num">5.0</span>
+      <span class="stars">★★★★★</span>
+      <span>(19)</span>
+    </div>
+    <div class="sub">Family law attorney in Santa Clara, California · <span class="open">Open 24 hours</span></div>
+    <div class="actions" onclick="event.stopPropagation()">
+      <a href="tel:+15853262994">
+        <svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"/></svg>
+        Call
+      </a>
+      <a href="#" onclick="event.preventDefault();go('profile')">
+        <svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 11.3l-9-9c-.4-.4-1-.4-1.4 0l-9 9c-.4.4-.4 1 0 1.4l9 9c.4.4 1 .4 1.4 0l9-9c.4-.4.4-1 0-1.4zM14 14.5V12h-4v3H8v-4c0-.6.4-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg>
+        Directions
+      </a>
+      <a href="#" onclick="event.preventDefault();go('profile')">
+        <svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        Text
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BUSINESS PROFILE ============ -->
+<section id="profile" class="screen">
+  <div class="gp-topbar">
+    <span class="gp-back" onclick="go('results')">
+      <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </span>
+  </div>
+  <div class="gp-title-row">
+    <div class="gp-title">Clio Law Offices LLP</div>
+    <div class="icons">
+      <span class="round"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></span>
+      <span class="round outline"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.9a3 3 0 0 0 0-2.6l6.6-3.8A3 3 0 1 0 14.4 4l-6.6 3.8a3 3 0 1 0 0 4.4l6.7 3.9A3 3 0 1 0 18 16z"/></svg></span>
+    </div>
+  </div>
+  <div class="gp-meta">
+    <span class="rating-num">5.0</span> <span class="stars">★</span> (19) · Family law attorney in Santa Clara, California · <span class="open">Open</span>
+  </div>
+  <div class="gp-tabs">
+    <div class="chip active">Overview</div>
+    <div class="chip">Services</div>
+    <div class="chip">About</div>
+    <div class="chip">By owner</div>
+    <div class="chip">Photos</div>
+  </div>
+  <div class="gp-photos">
+    <div id="gp-photo-john-wrap"><img id="gp-photo-john" alt="" src="assets/john.jpg" onerror="this.style.display='none';document.getElementById('gp-photo-john-wrap').style.backgroundImage='linear-gradient(135deg,#c8d0d9,#8b95a1)'" /></div>
+    <div id="gp-photo-office"></div>
+  </div>
+
+  <div class="gp-actions">
+    <a href="tel:+15853262994">
+      <span class="circle"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"/></svg></span>
+      Call
+    </a>
+    <span class="act">
+      <span class="circle"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 11.3l-9-9c-.4-.4-1-.4-1.4 0l-9 9c-.4.4-.4 1 0 1.4l9 9c.4.4 1 .4 1.4 0l9-9c.4-.4.4-1 0-1.4zM14 14.5V12h-4v3H8v-4c0-.6.4-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg></span>
+      Directions
+    </span>
+    <a href="sms:+15853262994">
+      <span class="circle"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+      Text
+    </a>
+    <span class="act">
+      <span class="circle"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg></span>
+      Website
+    </span>
+    <span class="act">
+      <span class="circle"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.9a3 3 0 0 0 0-2.6l6.6-3.8A3 3 0 1 0 14.4 4l-6.6 3.8a3 3 0 1 0 0 4.4l6.7 3.9A3 3 0 1 0 18 16z"/></svg></span>
+      Share
+    </span>
+  </div>
+
+  <div class="gp-row address">
+    <span class="ico"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span>
+    <span class="grow">2570 N First St 2nd Floor, Santa Clara, CA 95054, United States</span>
+    <span class="map">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="#ea4335"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z"/></svg>
+    </span>
+  </div>
+  <div class="gp-row">
+    <span class="ico"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+    <span class="grow">Text message</span>
+    <span class="chev"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+  </div>
+  <div class="gp-row">
+    <span class="ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+    <span class="grow"><span class="open">Open 24 hours</span></span>
+    <span class="chev"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
+  </div>
+  <a class="gp-row phone" href="tel:+15853262994">
+    <span class="ico"><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"/></svg></span>
+    <span class="grow num">+1 585-326-2994</span>
+    <span class="chev"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+  </a>
+</section>
+
+<script>
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+    window.scrollTo(0, 0);
+  }
+  // Deep-link support: open directly to #results or #profile
+  (function () {
+    var start = (location.hash || '').replace('#', '');
+    if (start === 'results' || start === 'profile') go(start);
+  })();
+  // Allow "Enter" in the home search box to run the search
+  document.getElementById('home-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); go('results'); this.blur(); }
+  });
+
+  // Placeholder office/building imagery (CSS gradients so no copyrighted assets).
+  // Swap these for real photos anytime.
+  var office = 'linear-gradient(135deg,#c8d0d9 0%,#aeb8c2 40%,#8b95a1 100%)';
+  ['res-photo-2','gp-photo-office'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.style.backgroundImage = office;
+  });
+  // First results-thumbnail uses John's headshot too (falls back to gradient if missing)
+  var p1 = document.getElementById('res-photo-1');
+  if (p1) { p1.style.backgroundImage = "url('assets/john.jpg'), " + office; }
+</script>
+</body>
+</html>
