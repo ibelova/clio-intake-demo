@@ -124,8 +124,9 @@
   .gp-tabs::-webkit-scrollbar { display: none; }
   .gp-tabs .chip { flex: 0 0 auto; font-size: 15px; padding: 8px 18px; border-radius: 20px; background: #f1f3f4; color: #3c4043; }
   .gp-tabs .chip.active { background: #d2e3fc; color: #174ea6; font-weight: 500; }
-  .gp-photos { display: flex; gap: 4px; padding: 0 16px; height: 220px; }
-  .gp-photos > div { flex: 1; border-radius: 8px; background-size: cover; background-position: center top; background-color:#e8eaed; }
+  .gp-photos { display: flex; gap: 4px; padding: 0 16px; height: 220px; overflow-x: auto; scrollbar-width: none; }
+  .gp-photos::-webkit-scrollbar { display: none; }
+  .gp-photos > div { flex: 0 0 46%; border-radius: 8px; background-size: cover; background-position: center; background-color:#e8eaed; }
   .gp-photos img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
 
   .gp-actions { display: flex; padding: 20px 8px 8px; overflow-x: auto; scrollbar-width: none; }
@@ -146,6 +147,31 @@
   .gp-row .open { color: var(--g-green); }
   .gp-row.phone .num { color: #202124; }
   svg.i { width: 22px; height: 22px; }
+
+  /* results loading state */
+  .gload { height: 3px; margin: 12px -16px 0; background: #e8f0fe; overflow: hidden; position: relative; display: none; }
+  #results.loading .gload { display: block; }
+  .gload::before { content:""; position:absolute; left:-40%; top:0; height:100%; width:40%; background: var(--g-blue); border-radius: 3px; animation: gload .9s infinite ease-in-out; }
+  @keyframes gload { 0%{left:-40%} 100%{left:100%} }
+  #results-skeleton { display: none; padding: 16px; }
+  #results.loading #results-skeleton { display: block; }
+  #results.loading #results-list { display: none; }
+  .sk { background: linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%); background-size: 400% 100%; animation: shimmer 1.2s infinite; border-radius: 8px; }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:0 0} }
+  .sk-card { border: 1px solid #eaeaea; border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .sk-card .sk.img { height: 130px; border-radius: 0; }
+  .sk-line { height: 14px; margin: 12px 16px; }
+
+  /* additional compact results */
+  .mini { display: flex; gap: 14px; align-items: center; margin: 0 16px; padding: 16px 0; border-top: 1px solid var(--g-line); }
+  .mini .thumb { width: 76px; height: 76px; border-radius: 10px; flex: 0 0 auto; background-size: cover; background-position: center; background-color:#e8eaed; }
+  .mini .info { flex: 1; min-width: 0; }
+  .mini .info .name { font-size: 18px; color: #202124; }
+  .mini .info .r { font-size: 14px; color: var(--g-grey); display:flex; align-items:center; gap:5px; margin: 3px 0; }
+  .mini .info .r .stars { color:#fbbc04; }
+  .mini .info .r .rn { color:#202124; font-weight:500; }
+  .mini .info .cat { font-size: 14px; color: var(--g-grey); }
+  .mini .info .cat .open { color: var(--g-green); font-weight: 500; }
 </style>
 </head>
 <body>
@@ -166,8 +192,8 @@
     </span>
   </div>
   <div class="home-btns">
-    <button onclick="go('results')">Google Search</button>
-    <button onclick="go('results')">I'm Feeling Lucky</button>
+    <button onclick="searchGo()">Google Search</button>
+    <button onclick="searchGo()">I'm Feeling Lucky</button>
   </div>
 </section>
 
@@ -196,7 +222,23 @@
     <div class="tab">Images</div>
     <div class="tab">News</div>
   </div>
+  <div class="gload"></div>
 
+  <!-- loading skeleton -->
+  <div id="results-skeleton">
+    <div class="sk-card">
+      <div class="sk img"></div>
+      <div class="sk sk-line" style="width:55%"></div>
+      <div class="sk sk-line" style="width:35%"></div>
+      <div class="sk sk-line" style="width:70%"></div>
+    </div>
+    <div class="sk-card" style="border:none">
+      <div class="sk sk-line" style="width:45%;height:60px;margin:16px"></div>
+      <div class="sk sk-line" style="width:60%;height:60px;margin:16px"></div>
+    </div>
+  </div>
+
+  <div id="results-list">
   <!-- Hero local result: Clio Law Offices LLP -->
   <div class="local" onclick="go('profile')">
     <div class="photos">
@@ -225,6 +267,25 @@
       </a>
     </div>
   </div>
+
+  <!-- Additional results -->
+  <div class="mini">
+    <div class="thumb" data-office="0"></div>
+    <div class="info">
+      <div class="name">Santa Clara Family Law Group</div>
+      <div class="r"><span class="rn">4.8</span><span class="stars">★★★★★</span><span>(112)</span></div>
+      <div class="cat">Divorce lawyer · <span class="open">Open</span> · Santa Clara, CA</div>
+    </div>
+  </div>
+  <div class="mini">
+    <div class="thumb" data-office="1"></div>
+    <div class="info">
+      <div class="name">Bay Area Divorce &amp; Custody Attorneys</div>
+      <div class="r"><span class="rn">4.6</span><span class="stars">★★★★☆</span><span>(87)</span></div>
+      <div class="cat">Family law attorney · Closes 6 PM · San Jose, CA</div>
+    </div>
+  </div>
+  </div><!-- /results-list -->
 </section>
 
 <!-- ============ BUSINESS PROFILE ============ -->
@@ -253,7 +314,9 @@
   </div>
   <div class="gp-photos">
     <div id="gp-photo-john-wrap"><img id="gp-photo-john" alt="" src="assets/john.jpg" onerror="this.style.display='none';document.getElementById('gp-photo-john-wrap').style.backgroundImage='linear-gradient(135deg,#c8d0d9,#8b95a1)'" /></div>
-    <div id="gp-photo-office"></div>
+    <div class="office" data-office="0"></div>
+    <div class="office" data-office="1"></div>
+    <div class="office" data-office="2"></div>
   </div>
 
   <div class="gp-actions">
@@ -317,18 +380,50 @@
   })();
   // Allow "Enter" in the home search box to run the search
   document.getElementById('home-input').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { e.preventDefault(); go('results'); this.blur(); }
+    if (e.key === 'Enter') { e.preventDefault(); searchGo(); this.blur(); }
   });
 
-  // Placeholder office/building imagery (CSS gradients so no copyrighted assets).
-  // Swap these for real photos anytime.
-  var office = 'linear-gradient(135deg,#c8d0d9 0%,#aeb8c2 40%,#8b95a1 100%)';
-  ['res-photo-2','gp-photo-office'].forEach(function(id){
-    var el = document.getElementById(id); if (el) el.style.backgroundImage = office;
+  // Generated office imagery (inline SVG data URIs — self-contained, no copyrighted assets)
+  function officeTile(o) {
+    var w = 300, h = 400;
+    var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + w + "' height='" + h + "' viewBox='0 0 " + w + " " + h + "'>";
+    svg += "<defs><linearGradient id='sk' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + o.sky[0] + "'/><stop offset='1' stop-color='" + o.sky[1] + "'/></linearGradient></defs>";
+    svg += "<rect width='" + w + "' height='" + h + "' fill='url(#sk)'/>";
+    svg += "<rect x='" + o.bx + "' y='" + o.by + "' width='" + o.bw + "' height='" + (h - o.by) + "' fill='" + o.wall + "'/>";
+    var pad = 12, gap = 7, cw = (o.bw - pad * 2 - gap * (o.cols - 1)) / o.cols, chh = o.chh || 26, y = o.by + 14;
+    for (var r = 0; r < o.rows; r++) {
+      for (var c = 0; c < o.cols; c++) {
+        var x = o.bx + pad + c * (cw + gap);
+        var op = (0.72 + ((r * 7 + c * 3) % 5) / 15).toFixed(2);
+        svg += "<rect x='" + x.toFixed(1) + "' y='" + y + "' width='" + cw.toFixed(1) + "' height='" + chh + "' rx='2' fill='" + o.win + "' opacity='" + op + "'/>";
+      }
+      y += chh + 11;
+    }
+    svg += "</svg>";
+    return "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
+  }
+  var OFFICES = [
+    officeTile({ sky: ['#a9cdea', '#e6f0f9'], wall: '#5c7690', win: '#d6e8f6', bx: 52, bw: 196, by: 46, cols: 5, rows: 9 }),
+    officeTile({ sky: ['#cfd8dc', '#eef1f2'], wall: '#8a8f94', win: '#e8edf0', bx: 64, bw: 172, by: 70, cols: 4, rows: 7, chh: 30 }),
+    officeTile({ sky: ['#bfe0d6', '#eaf5f1'], wall: '#4f7a6c', win: '#dff0ea', bx: 44, bw: 212, by: 58, cols: 6, rows: 8 })
+  ];
+  document.querySelectorAll('[data-office]').forEach(function (el) {
+    el.style.backgroundImage = OFFICES[(+el.getAttribute('data-office')) % OFFICES.length];
   });
-  // First results-thumbnail uses John's headshot too (falls back to gradient if missing)
+  // hero result thumbnails: John's headshot + an office
   var p1 = document.getElementById('res-photo-1');
-  if (p1) { p1.style.backgroundImage = "url('assets/john.jpg'), " + office; }
+  if (p1) p1.style.backgroundImage = "url('assets/john.jpg')";
+  var p2 = document.getElementById('res-photo-2');
+  if (p2) p2.style.backgroundImage = OFFICES[0];
+
+  // Run a search with a brief loading state before results appear
+  function searchGo() {
+    go('results');
+    var r = document.getElementById('results');
+    r.classList.add('loading');
+    clearTimeout(window._loadTimer);
+    window._loadTimer = setTimeout(function () { r.classList.remove('loading'); }, 850);
+  }
 </script>
 </body>
 </html>
