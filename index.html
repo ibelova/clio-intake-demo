@@ -383,29 +383,11 @@
     if (e.key === 'Enter') { e.preventDefault(); searchGo(); this.blur(); }
   });
 
-  // Generated office imagery (inline SVG data URIs — self-contained, no copyrighted assets)
-  function officeTile(o) {
-    var w = 300, h = 400;
-    var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + w + "' height='" + h + "' viewBox='0 0 " + w + " " + h + "'>";
-    svg += "<defs><linearGradient id='sk' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + o.sky[0] + "'/><stop offset='1' stop-color='" + o.sky[1] + "'/></linearGradient></defs>";
-    svg += "<rect width='" + w + "' height='" + h + "' fill='url(#sk)'/>";
-    svg += "<rect x='" + o.bx + "' y='" + o.by + "' width='" + o.bw + "' height='" + (h - o.by) + "' fill='" + o.wall + "'/>";
-    var pad = 12, gap = 7, cw = (o.bw - pad * 2 - gap * (o.cols - 1)) / o.cols, chh = o.chh || 26, y = o.by + 14;
-    for (var r = 0; r < o.rows; r++) {
-      for (var c = 0; c < o.cols; c++) {
-        var x = o.bx + pad + c * (cw + gap);
-        var op = (0.72 + ((r * 7 + c * 3) % 5) / 15).toFixed(2);
-        svg += "<rect x='" + x.toFixed(1) + "' y='" + y + "' width='" + cw.toFixed(1) + "' height='" + chh + "' rx='2' fill='" + o.win + "' opacity='" + op + "'/>";
-      }
-      y += chh + 11;
-    }
-    svg += "</svg>";
-    return "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
-  }
+  // Office imagery (real photos in /assets)
   var OFFICES = [
-    officeTile({ sky: ['#a9cdea', '#e6f0f9'], wall: '#5c7690', win: '#d6e8f6', bx: 52, bw: 196, by: 46, cols: 5, rows: 9 }),
-    officeTile({ sky: ['#cfd8dc', '#eef1f2'], wall: '#8a8f94', win: '#e8edf0', bx: 64, bw: 172, by: 70, cols: 4, rows: 7, chh: 30 }),
-    officeTile({ sky: ['#bfe0d6', '#eaf5f1'], wall: '#4f7a6c', win: '#dff0ea', bx: 44, bw: 212, by: 58, cols: 6, rows: 8 })
+    "url('assets/law_office1.jpeg')",
+    "url('assets/lawoffice2.jpeg')",
+    "url('assets/lawoffice3.jpg')"
   ];
   document.querySelectorAll('[data-office]').forEach(function (el) {
     el.style.backgroundImage = OFFICES[(+el.getAttribute('data-office')) % OFFICES.length];
@@ -414,7 +396,7 @@
   var p1 = document.getElementById('res-photo-1');
   if (p1) p1.style.backgroundImage = "url('assets/john.jpg')";
   var p2 = document.getElementById('res-photo-2');
-  if (p2) p2.style.backgroundImage = OFFICES[0];
+  if (p2) p2.style.backgroundImage = OFFICES[2];
 
   // Run a search with a brief loading state before results appear
   function searchGo() {
