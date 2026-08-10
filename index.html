@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Google</title>
+<!-- Launch full-screen (no browser chrome) when added to the home screen -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Google" />
+<meta name="theme-color" content="#f7f7f8" />
+<link rel="manifest" href="manifest.webmanifest" />
 <style>
   :root {
     --g-blue: #1a73e8;
@@ -172,9 +179,34 @@
   .mini .info .r .rn { color:#202124; font-weight:500; }
   .mini .info .cat { font-size: 14px; color: var(--g-grey); }
   .mini .info .cat .open { color: var(--g-green); font-weight: 500; }
+
+  /* fake Safari browser chrome */
+  body { padding-top: calc(env(safe-area-inset-top) + 53px); padding-bottom: calc(env(safe-area-inset-bottom) + 50px); }
+  #safari-top { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #f7f7f8; padding-top: env(safe-area-inset-top); border-bottom: 1px solid #d5d5d7; }
+  #safari-top .sf-pill { display: flex; align-items: center; gap: 10px; margin: 7px 12px; background: #e4e4e7; border-radius: 12px; padding: 9px 12px; }
+  #safari-top .sf-aa { font-size: 15px; color: #3c3c43; font-weight: 500; width: 26px; flex: 0 0 auto; }
+  #safari-top .sf-url { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 16px; color: #111; }
+  #safari-top .sf-share { width: 26px; flex: 0 0 auto; display: flex; justify-content: flex-end; }
+  #safari-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; background: #f7f7f8; border-top: 1px solid #d5d5d7; padding-bottom: env(safe-area-inset-bottom); display: flex; align-items: center; justify-content: space-around; height: 50px; }
+  #safari-bottom .sf-btn { display: flex; align-items: center; justify-content: center; color: #0a84ff; }
+  #safari-bottom .sf-btn.dim { color: #c2c2c7; }
 </style>
 </head>
 <body>
+
+<!-- ============ FAKE SAFARI TOP BAR ============ -->
+<div id="safari-top">
+  <div class="sf-pill">
+    <span class="sf-aa">aA</span>
+    <span class="sf-url">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="#5f6368"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm3 8H9V6a3 3 0 0 1 6 0v3z"/></svg>
+      google.com
+    </span>
+    <span class="sf-share">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#5f6368" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><path d="M8 7l4-4 4 4"/><path d="M7 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg>
+    </span>
+  </div>
+</div>
 
 <!-- ============ HOME ============ -->
 <section id="home" class="screen active">
@@ -365,6 +397,15 @@
     <span class="chev"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
   </a>
 </section>
+
+<!-- ============ FAKE SAFARI BOTTOM BAR ============ -->
+<div id="safari-bottom">
+  <span class="sf-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+  <span class="sf-btn dim"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
+  <span class="sf-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+  <span class="sf-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="4"/></svg></span>
+  <span class="sf-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span>
+</div>
 
 <script>
   function go(id) {

@@ -1,0 +1,10 @@
+{
+  "name": "Google",
+  "short_name": "Google",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#f7f7f8"
+}
