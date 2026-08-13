@@ -134,7 +134,7 @@
   .gp-photos { display: flex; gap: 4px; padding: 0 16px; height: 220px; overflow-x: auto; scrollbar-width: none; }
   .gp-photos::-webkit-scrollbar { display: none; }
   .gp-photos > div { flex: 0 0 46%; border-radius: 8px; background-size: cover; background-position: center; background-color:#e8eaed; }
-  .gp-photos img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
+  .gp-photos img { width: 100%; height: 100%; object-fit: cover; object-position: top center; border-radius: 8px; display: block; }
 
   .gp-actions { display: flex; padding: 20px 8px 8px; overflow-x: auto; scrollbar-width: none; }
   .gp-actions::-webkit-scrollbar { display: none; }
@@ -279,9 +279,9 @@
     </div>
     <div class="name">Clio Law Offices LLP</div>
     <div class="meta">
-      <span class="rating-num">5.0</span>
+      <span class="rating-num">4.8</span>
       <span class="stars">★★★★★</span>
-      <span>(19)</span>
+      <span>(420)</span>
     </div>
     <div class="sub">Family law attorney in Santa Clara, California · <span class="open">Open 24 hours</span></div>
     <div class="actions" onclick="event.stopPropagation()">
@@ -335,7 +335,7 @@
     </div>
   </div>
   <div class="gp-meta">
-    <span class="rating-num">5.0</span> <span class="stars">★</span> (19) · Family law attorney in Santa Clara, California · <span class="open">Open</span>
+    <span class="rating-num">4.8</span> <span class="stars">★</span> (420) · Family law attorney in Santa Clara, California · <span class="open">Open</span>
   </div>
   <div class="gp-tabs">
     <div class="chip active">Overview</div>
@@ -349,6 +349,7 @@
     <div class="office" data-office="0"></div>
     <div class="office" data-office="1"></div>
     <div class="office" data-office="2"></div>
+    <div class="office" data-office="0"></div>
   </div>
 
   <div class="gp-actions">
@@ -435,7 +436,7 @@
   });
   // hero result thumbnails: John's headshot + an office
   var p1 = document.getElementById('res-photo-1');
-  if (p1) p1.style.backgroundImage = "url('assets/john.jpg')";
+  if (p1) { p1.style.backgroundImage = "url('assets/john.jpg')"; p1.style.backgroundPosition = "top center"; }
   var p2 = document.getElementById('res-photo-2');
   if (p2) p2.style.backgroundImage = OFFICES[2];
 
